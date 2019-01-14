@@ -1,0 +1,8 @@
+{
+  "name": "lcov-parser",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Vijayasingam/lcov-parser.git",
+  "author": "Vijayasingam Thanasekaran <t.vijayasingam@gmail.com>",
+  "license": "MIT"
+}
