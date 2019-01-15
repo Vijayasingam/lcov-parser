@@ -34,4 +34,28 @@ export class GitService
       } )
     } )
   }
+  getModifiedFiles (): string[]
+  {
+    new Promise( resolve =>
+    {
+      exec( "git rev-list --no-merges --abbrev-commit -n 1 HEAD", ( error, stdout, stderr ) =>
+      {
+        const failed = error || stderr !== ""
+        resolve( failed ? "HEAD" : trimLineEnding( stdout ) )
+      } )
+    } )
+    return [];
+  }
+  getCreatedFiles (): string[]
+  {
+    new Promise( resolve =>
+    {
+      exec( "git rev-list --no-merges --abbrev-commit -n 1 HEAD", ( error, stdout, stderr ) =>
+      {
+        const failed = error || stderr !== ""
+        resolve( failed ? "HEAD" : trimLineEnding( stdout ) )
+      } )
+    } )
+    return [];
+  }
 }
