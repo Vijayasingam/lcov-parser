@@ -13,5 +13,6 @@ branches:
 
 after_success:
   - npm run semantic-release
+  - bash <(curl -s https://codecov.io/bash)
 
 cache: yarn
