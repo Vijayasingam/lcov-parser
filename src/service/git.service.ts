@@ -38,7 +38,7 @@ export class GitService
   {
     new Promise( resolve =>
     {
-      exec( "git rev-list --no-merges --abbrev-commit -n 1 HEAD", ( error, stdout, stderr ) =>
+      exec( "git diff --name-only && git diff --name-only --cached", ( error, stdout, stderr ) =>
       {
         const failed = error || stderr !== ""
         resolve( failed ? "HEAD" : trimLineEnding( stdout ) )
@@ -50,7 +50,7 @@ export class GitService
   {
     new Promise( resolve =>
     {
-      exec( "git rev-list --no-merges --abbrev-commit -n 1 HEAD", ( error, stdout, stderr ) =>
+      exec( 'git ls-files --exclude-standard --others && git diff --name-only --cached', ( error, stdout, stderr ) =>
       {
         const failed = error || stderr !== ""
         resolve( failed ? "HEAD" : trimLineEnding( stdout ) )
