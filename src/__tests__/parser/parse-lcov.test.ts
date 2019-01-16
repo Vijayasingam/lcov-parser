@@ -1,21 +1,17 @@
 import { parseLcov } from "../../parser/parse-lcov"
 import FilesystemService from "../../service/filesystem.service"
 
-function setupCoverageFile ( coverage: string | undefined )
-{
-  ( FilesystemService as any ).mockImplementation( () =>
-  {
+function setupCoverageFile( coverage: string | undefined ) {
+  ( FilesystemService as any ).mockImplementation( () => {
     return {
       exists: () => coverage !== undefined,
       read: () => ( coverage !== undefined ? coverage : undefined ),
     }
   } )
 }
-jest.mock( '../../service/filesystem.service' );
-describe( "parseLcov", () =>
-{
-  it( "can parse a correctly formatted lcov file", () =>
-  {
+jest.mock( "../../service/filesystem.service" )
+describe( "parseLcov", () => {
+  it( "can parse a correctly formatted lcov file", () => {
     setupCoverageFile(
       `TN:
 SF: some/file.ts
@@ -46,8 +42,7 @@ end_of_record`
     } )
   } )
 
-  it( "outputs an empty collection if there is no end_of_record", () =>
-  {
+  it( "outputs an empty collection if there is no end_of_record", () => {
     setupCoverageFile(
       `TN:
 SF: some/file.ts
@@ -64,8 +59,7 @@ LF: 20`
     expect( output ).toEqual( {} )
   } )
 
-  it( "fails to pass if FNF (number of functions) is missing", () =>
-  {
+  it( "fails to pass if FNF (number of functions) is missing", () => {
     setupCoverageFile(
       `TN:
 SF: some/file.ts
@@ -81,8 +75,7 @@ end_of_record`
     expect( () => parseLcov( "randomPath" ) ).toThrow()
   } )
 
-  it( "can parse a correctly formatted lcov file with two records", () =>
-  {
+  it( "can parse a correctly formatted lcov file with two records", () => {
     setupCoverageFile(
       `TN:
 SF: some/file1.ts
@@ -125,8 +118,7 @@ end_of_record`
     } )
   } )
 
-  it( "throws an error when the file doesn't exist", () =>
-  {
+  it( "throws an error when the file doesn't exist", () => {
     setupCoverageFile( undefined )
     expect( () => parseLcov( "randomPath" ) ).toThrow()
   } )

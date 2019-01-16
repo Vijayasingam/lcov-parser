@@ -1,7 +1,6 @@
 import { makeCompleteConfiguration } from "../../model/config.model"
 
-describe( "makeCompleteConfiguration", () =>
-{
+describe( "makeCompleteConfiguration", () => {
   const base = {
     coveragePaths: [ "./coverage/coverage-summary.json" ],
     reportFileSet: "all",
@@ -16,22 +15,19 @@ describe( "makeCompleteConfiguration", () =>
     },
   }
 
-  it( "returns a default configuration when sent undefined", () =>
-  {
+  it( "returns a default configuration when sent undefined", () => {
     const output = makeCompleteConfiguration()
     expect( output ).toEqual( base )
   } )
 
-  it( "overrides coveragePaths with the value from coveragePath", () =>
-  {
+  it( "overrides coveragePaths with the value from coveragePath", () => {
     const output = makeCompleteConfiguration( {
       coveragePath: "some-other-path",
     } )
     expect( output ).toEqual( { ...base, coveragePaths: [ "some-other-path" ] } )
   } )
 
-  it( "overrides a specific value from the default", () =>
-  {
+  it( "overrides a specific value from the default", () => {
     const output = makeCompleteConfiguration( {
       reportMode: "warn",
     } )

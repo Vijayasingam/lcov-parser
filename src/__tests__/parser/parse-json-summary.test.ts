@@ -1,11 +1,9 @@
-import FilesystemService from "../../service/filesystem.service"
 import { parseJsonSummary } from "../../parser/parse-json-summary"
+import FilesystemService from "../../service/filesystem.service"
 
-jest.mock( '../../service/filesystem.service' );
-function setupCoverageFile ( coverage: string | undefined )
-{
-  ; ( FilesystemService as any ).mockImplementation( () =>
-  {
+jest.mock( "../../service/filesystem.service" )
+function setupCoverageFile( coverage: string | undefined ) {
+   ( FilesystemService as any ).mockImplementation( () => {
     return {
       exists: () => coverage !== undefined,
       read: () => ( coverage !== undefined ? Buffer.from( coverage, "utf8" ) : undefined ),
@@ -13,10 +11,8 @@ function setupCoverageFile ( coverage: string | undefined )
   } )
 }
 
-describe( "parseJsonSummary", () =>
-{
-  it( "parses a correctly formatted json object", () =>
-  {
+describe( "parseJsonSummary", () => {
+  it( "parses a correctly formatted json object", () => {
     setupCoverageFile( `
     {
       "f1": {
@@ -38,21 +34,18 @@ describe( "parseJsonSummary", () =>
     } )
   } )
 
-  it( "throws an error when the file is invalid json", () =>
-  {
+  it( "throws an error when the file is invalid json", () => {
     setupCoverageFile( `
     {`) // Missing a closing brace
     expect( () => parseJsonSummary( "randomName" ) ).toThrow()
   } )
 
-  it( "throws an error when the file doesn't exist", () =>
-  {
+  it( "throws an error when the file doesn't exist", () => {
     setupCoverageFile( undefined ) // Missing a closing brace
     expect( () => parseJsonSummary( "randomName" ) ).toThrow()
   } )
 
-  it( "throws an error when coverage entry isn't object ", () =>
-  {
+  it( "throws an error when coverage entry isn't object ", () => {
     setupCoverageFile( `{
       "f1": [
         { "lines": { "total": 100, "covered": 0, "skipped": 0, "pct": 0 } },
@@ -64,8 +57,7 @@ describe( "parseJsonSummary", () =>
     expect( () => parseJsonSummary( "randomName" ) ).toThrow()
   } )
 
-  it( "throws an error when coverage entry is missing 'lines' property ", () =>
-  {
+  it( "throws an error when coverage entry is missing 'lines' property ", () => {
     setupCoverageFile( `{
       "f1": {
         "functions": { "total": 100, "covered": 1, "skipped": 0, "pct": 1 },
@@ -76,8 +68,7 @@ describe( "parseJsonSummary", () =>
     expect( () => parseJsonSummary( "randomName" ) ).toThrow()
   } )
 
-  it( "throws an error when coverage item isn't an object ", () =>
-  {
+  it( "throws an error when coverage item isn't an object ", () => {
     setupCoverageFile( `{
       "f1": {
         "lines": "not an object",
@@ -89,8 +80,7 @@ describe( "parseJsonSummary", () =>
     expect( () => parseJsonSummary( "randomName" ) ).toThrow()
   } )
 
-  it( "throws an error when coverage item is missing 'total' property ", () =>
-  {
+  it( "throws an error when coverage item is missing 'total' property ", () => {
     setupCoverageFile( `{
       "f1": {
         "lines": { "covered": 1, "skipped": 0, "pct": 1 },
@@ -102,8 +92,7 @@ describe( "parseJsonSummary", () =>
     expect( () => parseJsonSummary( "randomName" ) ).toThrow()
   } )
 
-  it( "throws an error when coverage item is missing has non number property ", () =>
-  {
+  it( "throws an error when coverage item is missing has non number property ", () => {
     setupCoverageFile( `{
       "f1": {
         "lines": { "total": "this-is-an-invalid-string", "covered": 1, "skipped": 0, "pct": 1 },

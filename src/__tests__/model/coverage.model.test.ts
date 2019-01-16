@@ -1,17 +1,7 @@
-import
-{
-  combineEntries,
-  CoverageCollection,
-  CoverageEntry,
-  makeCoverageModel,
-  meetsThreshold,
-  sortFiles,
-} from "../../model/coverage.model"
+import { combineEntries, CoverageCollection, CoverageEntry, makeCoverageModel, meetsThreshold, sortFiles } from "../../model/coverage.model"
 
-describe( "combineEntries()", () =>
-{
-  it( "can add non-zero line counts", () =>
-  {
+describe( "combineEntries()", () => {
+  it( "can add non-zero line counts", () => {
     const entry1: CoverageEntry = {
       lines: { total: 10, covered: 3, skipped: 7, pct: 30 },
       statements: { total: 20, covered: 7, skipped: 13, pct: 35 },
@@ -33,8 +23,7 @@ describe( "combineEntries()", () =>
     } )
   } )
 
-  it( "returns 100% coverage when there is nothing to cover", () =>
-  {
+  it( "returns 100% coverage when there is nothing to cover", () => {
     const entry1: CoverageEntry = {
       lines: { total: 0, covered: 0, skipped: 0, pct: 100 },
       statements: { total: 0, covered: 0, skipped: 0, pct: 100 },
@@ -57,8 +46,7 @@ describe( "combineEntries()", () =>
   } )
 } )
 
-describe( "meetsThreshold()", () =>
-{
+describe( "meetsThreshold()", () => {
   const entry = Object.freeze( {
     lines: { total: 100, covered: 50, skipped: 50, pct: 50 },
     statements: { total: 100, covered: 50, skipped: 50, pct: 50 },
@@ -66,40 +54,33 @@ describe( "meetsThreshold()", () =>
     functions: { total: 100, covered: 50, skipped: 50, pct: 50 },
   } )
 
-  it( "returns false when lines percentage below threshold", () =>
-  {
+  it( "returns false when lines percentage below threshold", () => {
     const result = meetsThreshold( entry, { lines: 80, statements: 40, branches: 40, functions: 40 } )
     expect( result ).toBe( false )
   } )
-  it( "returns false when statements percentage below threshold", () =>
-  {
+  it( "returns false when statements percentage below threshold", () => {
     const result = meetsThreshold( entry, { lines: 40, statements: 80, branches: 40, functions: 40 } )
     expect( result ).toBe( false )
   } )
-  it( "returns false when branches percentage above threshold", () =>
-  {
+  it( "returns false when branches percentage above threshold", () => {
     const result = meetsThreshold( entry, { lines: 40, statements: 40, branches: 80, functions: 40 } )
     expect( result ).toBe( false )
   } )
-  it( "returns false when functions percentage above threshold", () =>
-  {
+  it( "returns false when functions percentage above threshold", () => {
     const result = meetsThreshold( entry, { lines: 40, statements: 40, branches: 40, functions: 80 } )
     expect( result ).toBe( false )
   } )
-  it( "returns true when all coverage above thresholds", () =>
-  {
+  it( "returns true when all coverage above thresholds", () => {
     const result = meetsThreshold( entry, { lines: 40, statements: 40, branches: 40, functions: 40 } )
     expect( result ).toBe( true )
   } )
-  it( "returns true when all coverage equal to thresholds", () =>
-  {
+  it( "returns true when all coverage equal to thresholds", () => {
     const result = meetsThreshold( entry, { lines: 50, statements: 50, branches: 50, functions: 50 } )
     expect( result ).toBe( true )
   } )
 } )
 
-describe( "makeCoverageModel", () =>
-{
+describe( "makeCoverageModel", () => {
   const files = [ "file1", "file2", "file3", "file4" ]
   const coverage: CoverageCollection = {
     file1: {
@@ -128,8 +109,7 @@ describe( "makeCoverageModel", () =>
     },
   }
 
-  it( "calculates the average of the final two elided entries", () =>
-  {
+  it( "calculates the average of the final two elided entries", () => {
     const output = makeCoverageModel( 2, files, coverage )
     expect( output.elidedCount ).toEqual( 2 )
     expect( output.elided ).toEqual( {
@@ -140,8 +120,7 @@ describe( "makeCoverageModel", () =>
     } )
   } )
 
-  it( "doesn't elide when total number of files is equal to numberOfEntries to display", () =>
-  {
+  it( "doesn't elide when total number of files is equal to numberOfEntries to display", () => {
     const output = makeCoverageModel( 4, files, coverage )
     expect( output.elidedCount ).toEqual( 0 )
     expect( output.elided ).toEqual( {
@@ -153,8 +132,7 @@ describe( "makeCoverageModel", () =>
   } )
 } )
 
-describe( "sortFiles", () =>
-{
+describe( "sortFiles", () => {
   const coverage = {
     file1: {
       lines: { total: 50, covered: 25, skipped: 25, pct: 50 },
@@ -175,39 +153,32 @@ describe( "sortFiles", () =>
       branches: { total: 100, covered: 70, skipped: 30, pct: 70 },
     },
   }
-  it( "sorts files by their line coverage percentage in descending order", () =>
-  {
+  it( "sorts files by their line coverage percentage in descending order", () => {
     const output = sortFiles( [ "file1", "file2", "file3" ], coverage, "most-coverage" )
     expect( output ).toEqual( [ "file3", "file2", "file1" ] )
   } )
-  it( "sorts files by their line coverage percentage in ascending order", () =>
-  {
+  it( "sorts files by their line coverage percentage in ascending order", () => {
     const output = sortFiles( [ "file1", "file2", "file3" ], coverage, "least-coverage" )
     expect( output ).toEqual( [ "file1", "file2", "file3" ] )
   } )
-  it( "skips files not in input file list", () =>
-  {
+  it( "skips files not in input file list", () => {
     const output = sortFiles( [ "file1", "file3" ], coverage, "most-coverage" )
     expect( output ).toEqual( [ "file3", "file1" ] )
   } )
-  it( "sorts files by the number of lines in descending order", () =>
-  {
+  it( "sorts files by the number of lines in descending order", () => {
     const output = sortFiles( [ "file1", "file2", "file3" ], coverage, "largest-file-size" )
     expect( output ).toEqual( [ "file2", "file3", "file1" ] )
   } )
-  it( "sorts files the number of lines in ascending order", () =>
-  {
+  it( "sorts files the number of lines in ascending order", () => {
     const output = sortFiles( [ "file1", "file2", "file3" ], coverage, "smallest-file-size" )
     expect( output ).toEqual( [ "file1", "file3", "file2" ] )
   } )
-  it( "sorts files by the number of uncovered lines in descending order", () =>
-  {
+  it( "sorts files by the number of uncovered lines in descending order", () => {
     const output = sortFiles( [ "file1", "file2", "file3" ], coverage, "uncovered-lines" )
     expect( output ).toEqual( [ "file3", "file2", "file1" ] )
   } )
 
-  it( "sorts files in alphabetical order", () =>
-  {
+  it( "sorts files in alphabetical order", () => {
     const output = sortFiles( [ "c", "b", "a" ], coverage, "alphabetically" )
     expect( output ).toEqual( [ "a", "b", "c" ] )
   } )

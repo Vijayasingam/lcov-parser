@@ -1,8 +1,7 @@
 import { CoverageCollection, CoverageItem } from "../model/coverage.model"
 import FilesystemService from "../service/filesystem.service"
 
-enum LcovToken
-{
+enum LcovToken {
   TEST_NAME = "TN",
   SOURCE_FILE = "SF",
   FUNCTION = "FN",
@@ -21,30 +20,25 @@ enum LcovToken
 // @ts-ignore
 const reverseTokenLookup = new Map<string, LcovToken>()
 // @ts-ignore
-Object.keys( LcovToken ).forEach( ( token: LcovToken ) =>
-{
+Object.keys( LcovToken ).forEach( ( token: LcovToken ) => {
   // @ts-ignore
   const tokenValue: string = LcovToken[ token ]
   reverseTokenLookup.set( tokenValue, token )
 } )
 Object.freeze( reverseTokenLookup )
 
-function getTokenFromValue ( tokenValue: string ): LcovToken
-{
+function getTokenFromValue( tokenValue: string ): LcovToken {
   // @ts-ignore
   return LcovToken[ reverseTokenLookup.get( tokenValue ) as string ]
 }
 
-interface Line
-{
+interface Line {
   token: LcovToken
   parts: string[]
 }
 
-function partsExpected ( token: LcovToken ): number
-{
-  switch ( token )
-  {
+function partsExpected( token: LcovToken ): number {
+  switch ( token ) {
     case LcovToken.TEST_NAME:
       return 1
     case LcovToken.SOURCE_FILE:
@@ -74,23 +68,19 @@ function partsExpected ( token: LcovToken ): number
   }
 }
 
-function splitLine ( line: string ): Line | undefined
-{
+function splitLine( line: string ): Line | undefined {
   const splitIndex = line.indexOf( ":" )
-  if ( line === LcovToken.END_OF_RECORD )
-  {
+  if ( line === LcovToken.END_OF_RECORD ) {
     return { token: LcovToken.END_OF_RECORD, parts: [] }
   }
   const key = line.substring( 0, splitIndex )
   const token: LcovToken | undefined = getTokenFromValue( key )
-  if ( token === undefined )
-  {
+  if ( token === undefined ) {
     return undefined
   }
   const expectedParts = partsExpected( token )
   const remainder = line.slice( splitIndex + 1 )
-  if ( remainder.length === 0 )
-  {
+  if ( remainder.length === 0 ) {
     return { token, parts: [] }
   }
   let parts = expectedParts > 1 ? remainder.split( "," ) : [ remainder ]
@@ -98,13 +88,11 @@ function splitLine ( line: string ): Line | undefined
   return { token, parts }
 }
 
-function makeCoverageItem ( total: number, covered: number ): CoverageItem
-{
+function makeCoverageItem( total: number, covered: number ): CoverageItem {
   return { total, covered, skipped: total - covered, pct: ( covered / total ) * 100 }
 }
 
-function convertToCollection ( lines: Line[] ): CoverageCollection
-{
+function convertToCollection( lines: Line[] ): CoverageCollection {
   let file: string | undefined
   let numFunctions: number | undefined
   let numFunctionsHit: number | undefined
@@ -115,10 +103,8 @@ function convertToCollection ( lines: Line[] ): CoverageCollection
 
   const collection: CoverageCollection = {}
 
-  lines.forEach( line =>
-  {
-    switch ( line.token )
-    {
+  lines.forEach( line => {
+    switch ( line.token ) {
       case LcovToken.SOURCE_FILE:
         file = line.parts[ 0 ]
         break
@@ -149,8 +135,7 @@ function convertToCollection ( lines: Line[] ): CoverageCollection
           numBranchesHit === undefined ||
           numLines === undefined ||
           numLinesHit === undefined
-        )
-        {
+        ) {
           throw Error()
         }
 
@@ -173,26 +158,22 @@ function convertToCollection ( lines: Line[] ): CoverageCollection
   return collection
 }
 
-export function parseLcov ( coveragePath: string ): CoverageCollection
-{
+export function parseLcov( coveragePath: string ): CoverageCollection {
   const filesystem = new FilesystemService()
 
-  if ( !filesystem.exists( coveragePath ) )
-  {
+  if ( !filesystem.exists( coveragePath ) ) {
     throw Error( `Couldn't find instanbul coverage json file at path '${ coveragePath }'.` )
   }
 
   let content: string
-  try
-  {
+  try {
     content = filesystem.read( coveragePath )
     const lines: Line[] = content
       .split( "\n" )
       .map( splitLine )
       .filter( line => line !== undefined ) as Line[]
     return convertToCollection( lines )
-  } catch ( error )
-  {
+  } catch ( error ) {
     throw Error( `Coverage data had invalid formatting at path '${ coveragePath }'` )
   }
 }

@@ -4,7 +4,6 @@ To Parse LCOV file and print in the console
 [![Build Status](https://travis-ci.org/Vijayasingam/lcov-parser.svg?branch=master)](https://travis-ci.org/Vijayasingam/lcov-parser)
 [![codecov](https://codecov.io/gh/Vijayasingam/lcov-parser/branch/master/graph/badge.svg)](https://codecov.io/gh/Vijayasingam/lcov-parser)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/Vijayasingam/lcov-parser/issues)
-[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 > LCOV Parser for monitoring code coverage on changed files.
 

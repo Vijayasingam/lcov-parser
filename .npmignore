@@ -10,4 +10,10 @@ types/*
 coverage
 .vscode/*
 *.png
-
+dist/__tests__/*
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+settings.json
+tslint.json
+tsconfig.json
+*.test.*

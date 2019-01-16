@@ -7,14 +7,11 @@ import * as path from "path"
  * @param maxLength The maximum length of the path. Must be at least 4.
  * @returns The shortened directory name.
  */
-export function getPrettyPathName ( pathName: string, maxLength: number ): string
-{
-  if ( maxLength < 4 )
-  {
+export function getPrettyPathName( pathName: string, maxLength: number ): string {
+  if ( maxLength < 4 ) {
     throw Error( "maxLength must be at least 4" )
   }
-  if ( pathName.length <= maxLength )
-  {
+  if ( pathName.length <= maxLength ) {
     return pathName
   }
 
@@ -27,21 +24,18 @@ export function getPrettyPathName ( pathName: string, maxLength: number ): strin
   let firstDir = dirs.shift()
   firstDir = firstDir ? firstDir : ""
 
-  while ( dirs.length > 0 )
-  {
+  while ( dirs.length > 0 ) {
     // Except for the first directory, start removing dirs from left to right.
     dirs.shift()
     const middle = [ "..", ...dirs ].join( path.sep )
     const newPath = `${ parts.root }${ firstDir }${ path.sep }${ middle }${ path.sep }${ parts.base }`
-    if ( newPath.length <= maxLength )
-    {
+    if ( newPath.length <= maxLength ) {
       return newPath
     }
   }
 
   const rootAndName = `..${ path.sep }${ parts.base }`
-  if ( rootAndName.length <= maxLength )
-  {
+  if ( rootAndName.length <= maxLength ) {
     return rootAndName
   }
   return `${ rootAndName.slice( 0, maxLength - 2 ) }..`
@@ -52,8 +46,7 @@ export function getPrettyPathName ( pathName: string, maxLength: number ): strin
  * @param source The source to escape
  * @returns An escaped version of the string
  */
-export function escapeMarkdownCharacters ( source: string )
-{
+export function escapeMarkdownCharacters( source: string ) {
   const escapedCharacters = [ "|", "(", ")", "[", "]", "#", "*", "{", "}", "-", "+", "_", "!", "\\", "`" ]
   return [ ...source ].map( c => ( _.includes( escapedCharacters, c ) ? `\\${ c }` : c ) ).join( "" )
 }
@@ -65,15 +58,12 @@ export function escapeMarkdownCharacters ( source: string )
  * @param seperator The separator the path should end in. Defaults to platform native.
  * @returns A cleaned up git root directory.
  */
-export function parseGitRootPathOutput ( stdout: string, seperator?: string ): string
-{
-  if ( seperator === undefined )
-  {
+export function parseGitRootPathOutput( stdout: string, seperator?: string ): string {
+  if ( seperator === undefined ) {
     seperator = path.sep
   }
   stdout = trimLineEnding( stdout )
-  if ( stdout.endsWith( seperator ) )
-  {
+  if ( stdout.endsWith( seperator ) ) {
     return stdout
   }
   return `${ stdout }${ seperator }`
@@ -83,7 +73,6 @@ export function parseGitRootPathOutput ( stdout: string, seperator?: string ): s
  * @param input The string to cleanup
  * @returns The string without line endings
  */
-export function trimLineEnding ( input: string ): string
-{
+export function trimLineEnding( input: string ): string {
   return input.replace( /[\r\n]*/g, "" )
 }
