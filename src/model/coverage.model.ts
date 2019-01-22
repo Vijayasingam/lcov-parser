@@ -12,6 +12,7 @@ export interface CoverageEntry {
   functions: CoverageItem
   statements: CoverageItem
   branches: CoverageItem
+  name?: string
 }
 
 export interface CoverageCollection {

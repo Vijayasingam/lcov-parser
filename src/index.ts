@@ -6,6 +6,7 @@ import * as _ from "lodash"
 import * as path from "path"
 import { parseLcov } from "./parser/parse-lcov"
 import { GitService } from "./service/git.service"
+import TextReport from "./service/textReport.service"
 import { getPrettyPathName } from "./utils/filename-utils"
 
 function filterForCoveredFiles( basePath: string, files: string[], coverage: CoverageCollection ): string[] {
@@ -48,19 +49,6 @@ function getFileGroupLongDescription( reportChangeType: ReportFileSet ) {
   return "the modified or changed files in this PR"
 }
 
-function getFileGroupShortDescription( reportChangeType: ReportFileSet ) {
-  if ( reportChangeType === "all" ) {
-    return "All Files"
-  }
-  if ( reportChangeType === "created" ) {
-    return "New Files"
-  }
-  if ( reportChangeType === "modified" ) {
-    return "Modified Files"
-  }
-  return "Created or Modified Files"
-}
-
 function printCoverageHealth( config: Config, results: CoverageEntry ) {
   const reportFunc = getReportFunc( config.reportMode )
   const messageType = getFileGroupLongDescription( config.reportFileSet )
@@ -81,20 +69,11 @@ function formatSourceName( source: string ): string {
 }
 
 function generateReport( basePath: string, coverage: CoverageModel, reportChangeType: ReportFileSet ) {
-  const header = `## Coverage in ${ getFileGroupShortDescription( reportChangeType ) }
-File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------: | -----------------: | ----------------: | --------------:`
-
+  const header = TextReport.tableHeader(70) + reportChangeType
   const lines = Object.keys( coverage.displayed ).map( filename => {
     const e = coverage.displayed[ filename ]
-    const shortFilename = formatSourceName( path.relative( basePath, filename ) )
-    return [
-      shortFilename,
-      formatItem( e.lines ),
-      formatItem( e.statements ),
-      formatItem( e.functions ),
-      formatItem( e.branches ),
-    ].join( " | " )
+    e.name = formatSourceName( path.relative( basePath, filename ) )
+    return TextReport.tableRow(e, 70, 1)
   } )
 
   const ellided =
@@ -115,7 +94,7 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
     formatItem( coverage.total.functions ),
     formatItem( coverage.total.branches ),
   ].join( " | " )
-  return [ header, ...lines, ellided, total, "" ].filter( part => part !== undefined ).join( "\n" )
+  return console.log([ header, ...lines, ellided, total, "" ].filter( part => part !== undefined ).join( "\n" ))
 }
 
 function getCoveragePaths( coveragePaths: SourcePath[] ): SourcePathExplicit[] {
@@ -196,9 +175,10 @@ export function reportCoverage( config?: Partial<Config> ): Promise<void> {
         combinedConfig.entrySortMethod
       )
 
-      const report = generateReport( gitRoot, coverageModel, combinedConfig.reportFileSet )
-      console.table( report )
-      printCoverageHealth( combinedConfig, coverageModel.total )
+      generateReport( gitRoot, coverageModel, combinedConfig.reportFileSet )
+      if (combinedConfig.threshold) {
+        printCoverageHealth( combinedConfig, coverageModel.total )
+      }
     } )
     .catch( ( reason: string ) => {
       console.error( reason )
