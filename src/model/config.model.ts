@@ -32,6 +32,8 @@ export interface Config {
   reportFileSet: ReportFileSet
   threshold: CoverageThreshold
   reportMode: ReportMode
+  skipEmpty?: boolean
+  skipFull?: boolean
 }
 
 /**
@@ -45,12 +47,12 @@ export function makeCompleteConfiguration(config?: Partial<Config>): Config {
     reportFileSet: "all",
     reportMode: "message",
     entrySortMethod: "alphabetically",
-    numberOfEntries: 10,
+    numberOfEntries: 10000,
     threshold: {
-      statements: 100,
-      branches: 100,
-      functions: 100,
-      lines: 100,
+      statements: 50,
+      branches: 50,
+      functions: 50,
+      lines: 50,
     },
   }
 

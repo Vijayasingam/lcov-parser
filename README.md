@@ -26,7 +26,7 @@ reportCoverage({
   customFailureMessage: "Coverage is a little low, take a look",
 
   // How to sort the entries in the table
-  entrySortMethod: "alphabetical" // || "least-coverage" || "most-coverage" || "largest-file-size" ||"smallest-file-size" || "uncovered-lines"
+  entrySortMethod: "alphabetical", // || "least-coverage" || "most-coverage" || "largest-file-size" ||"smallest-file-size" || "uncovered-lines"
 
   // Add a maximum number of entries to display
   numberOfEntries: 10,
@@ -34,9 +34,9 @@ reportCoverage({
   // The location of the istanbul coverage file.
   coveragePath: "./coverage/coverage-summary.json",
   // Alternatively, if you have multiple coverage summaries, you can merge them into one report
-  coveragePaths: ["./dir1/coverage-summary.json", "./dir2/coverage-summary.json"]
+  coveragePaths: ["./dir1/coverage-summary.json", "./dir2/coverage-summary.json"],
   // You can also specify the format, instead of letting it be inferred from the file name
-  coveragePath: { path: "./coverage/lcov.info", type: "lcov" /* ||  "json-summary" */}
+  coveragePath: { path: "./coverage/lcov.info", type: "lcov" /* ||  "json-summary" */},
 
   // Which set of files to summarise from the coverage file.
   reportFileSet: "all", // || "modified" || "created" || "createdOrModified"

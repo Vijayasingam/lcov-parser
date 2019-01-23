@@ -68,12 +68,12 @@ function formatSourceName( source: string ): string {
   return getPrettyPathName( source, 30 )
 }
 
-function generateReport( basePath: string, coverage: CoverageModel, reportChangeType: ReportFileSet ) {
-  const header = TextReport.tableHeader(70) + reportChangeType
+function generateReport( basePath: string, coverage: CoverageModel, combinedConfig: Config ) {
+  const header = TextReport.tableHeader(70) + combinedConfig.reportFileSet
   const lines = Object.keys( coverage.displayed ).map( filename => {
     const e = coverage.displayed[ filename ]
     e.name = formatSourceName( path.relative( basePath, filename ) )
-    return TextReport.tableRow(e, 70, 1)
+    return TextReport.tableRow(e, 70, 1, combinedConfig.skipEmpty, combinedConfig.skipFull)
   } )
 
   const ellided =
@@ -175,7 +175,7 @@ export function reportCoverage( config?: Partial<Config> ): Promise<void> {
         combinedConfig.entrySortMethod
       )
 
-      generateReport( gitRoot, coverageModel, combinedConfig.reportFileSet )
+      generateReport( gitRoot, coverageModel, combinedConfig )
       if (combinedConfig.threshold) {
         printCoverageHealth( combinedConfig, coverageModel.total )
       }
