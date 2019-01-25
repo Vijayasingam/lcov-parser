@@ -69,11 +69,18 @@ function formatSourceName( source: string ): string {
 }
 
 function generateReport( basePath: string, coverage: CoverageModel, combinedConfig: Config ) {
-  const header = TextReport.tableHeader(70) + combinedConfig.reportFileSet
+  let maxFileNameLen: number = 0
+  Object.keys(coverage.displayed).forEach((filename ) => {
+    const name = formatSourceName( path.relative( basePath, filename ) )
+    if (name.length > maxFileNameLen) {
+      maxFileNameLen = name.length
+    }
+  })
+  const header = TextReport.tableHeader(maxFileNameLen + 5)
   const lines = Object.keys( coverage.displayed ).map( filename => {
     const e = coverage.displayed[ filename ]
     e.name = formatSourceName( path.relative( basePath, filename ) )
-    return TextReport.tableRow(e, 70, 1, combinedConfig.skipEmpty, combinedConfig.skipFull)
+    return TextReport.tableRow(e, maxFileNameLen + 5, 1, combinedConfig.skipEmpty, combinedConfig.skipFull)
   } )
 
   const ellided =

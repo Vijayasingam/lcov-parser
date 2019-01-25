@@ -6,13 +6,41 @@ const TAB_SIZE = 1
 const DELIM = " |"
 const COL_DELIM = "-|"
 export default class TextReport {
+
   static watermarksConfig: {[key: string]: number[]} = {
     statements: [50, 80],
     functions: [50, 80],
     branches: [50, 80],
     lines: [50, 80]
   }
-  static classForPercent(type: string, value: number) {
+  static getLineCoverage() {
+    const statementMap: any = {} // this.data.statementMap,
+    const statements: any = {} // this.data.s,
+    const lineMap: any = {}
+
+    Object.keys(statements).forEach((st) => {
+        if (!statementMap[st]) {
+            return
+        }
+        const line = statementMap[st].start.line
+        const count = statements[st]
+        const prevVal = lineMap[line]
+        if (prevVal === undefined || prevVal < count) {
+            lineMap[line] = count
+        }
+    })
+    return lineMap
+}  static getUncoveredLines() {
+    const lc = this.getLineCoverage()
+    const ret: string[] = []
+    Object.keys(lc).forEach((l) => {
+        const hits = lc[l]
+        if (hits === 0) {
+            ret.push(l)
+        }
+    })
+    return ret
+}  static classForPercent(type: string, value: number) {
     const watermarks: number[] = this.watermarksConfig[type]
     if (!watermarks) {
         return "unknown"
@@ -91,11 +119,13 @@ export default class TextReport {
     return elements.join( " |" ) + " |"
   }
 
-  static missingLines( lines: string[], colorizer: any ) {
-    return colorizer( this.formatPct( lines.join(", "), 0, MISSING_COL ), "low" )
+  static missingLines( lines: any, colorizer: any ) {
+    // var missingLines = node.isSummary() ? [] : node.getFileCoverage().getUncoveredLines();
+    return colorizer( this.formatPct( lines.skippedItems && lines.skippedItems.length > 0 ? lines.skippedItems.join(", ") : "", 0, MISSING_COL ), "low" )
   }
 
   static missingBranches( branches: any, colorizer: any ) {
+    // var branches = node.isSummary() ? {} : node.getFileCoverage().getBranchCoverageByLine(),
     const missingLines = Object.keys( branches ).filter( ( key ) => {
       return branches[ key ].coverage < 100
     } ).map( ( key ) => {
@@ -137,7 +167,7 @@ export default class TextReport {
     if ( Number( mm.lines ) === 100 ) {
       elements.push( this.missingBranches( row, this.colorize ) )
     } else {
-      elements.push( this.missingLines( new Array(row.lines.skipped), this.colorize ) )
+      elements.push( this.missingLines( row.lines, this.colorize ) )
     }
     return elements.join( DELIM ) + DELIM
   }
@@ -148,7 +178,7 @@ export default class TextReport {
         high: "32;1"
     }
 
-    if (colors[clazz]) {
+    if (require("tty").isatty(1) && colors[clazz]) {
         return "\u001b[" + colors[clazz] + "m" + str + "\u001b[0m"
     }
     return str

@@ -88,8 +88,18 @@ function splitLine( line: string ): Line | undefined {
   return { token, parts }
 }
 
-function makeCoverageItem( total: number, covered: number ): CoverageItem {
-  return { total, covered, skipped: total - covered, pct: ( covered / total ) * 100 }
+function makeCoverageItem(currentItem: CoverageItem | undefined, total: number, covered: number, missing?: number ): CoverageItem {
+  if (!currentItem) {
+    currentItem = {total: 0, covered: 0, skipped: 0, pct: 0}
+  }
+  if (!currentItem.skippedItems) {
+    currentItem.skippedItems = []
+  }
+  const skippedItems = currentItem.skippedItems
+  if (missing) {
+    skippedItems.push(missing.toString())
+  }
+  return { total, covered, skippedItems, skipped: total - covered, pct: ( covered / total ) * 100 }
 }
 
 function convertToCollection( lines: Line[] ): CoverageCollection {
@@ -100,7 +110,7 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
   let numBranchesHit: number | undefined
   let numLines: number | undefined
   let numLinesHit: number | undefined
-
+  let linesMissing: number | undefined
   const collection: CoverageCollection = {}
 
   lines.forEach( line => {
@@ -120,6 +130,9 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
       case LcovToken.BRANCHES_FOUND:
         numBranches = Number( line.parts[ 0 ] )
         break
+      case LcovToken.LINE:
+        linesMissing = Number( line.parts[ 1 ] )
+        break
       case LcovToken.LINES_HIT:
         numLinesHit = Number( line.parts[ 0 ] )
         break
@@ -138,12 +151,12 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
         ) {
           throw Error()
         }
-
+        const isNew = !collection[ file ]
         collection[ file ] = {
-          lines: makeCoverageItem( numLines, numLinesHit ),
-          functions: makeCoverageItem( numFunctions, numFunctionsHit ),
-          branches: makeCoverageItem( numBranches, numBranchesHit ),
-          statements: makeCoverageItem( numLines, numLinesHit ),
+          lines: makeCoverageItem(isNew ? undefined : collection[ file ].lines, numLines, numLinesHit, linesMissing ),
+          functions: makeCoverageItem(isNew ? undefined : collection[ file ].functions, numFunctions, numFunctionsHit ),
+          branches: makeCoverageItem(isNew ? undefined : collection[ file ].branches, numBranches, numBranchesHit ),
+          statements: makeCoverageItem(isNew ? undefined : collection[ file ].statements, numLines, numLinesHit ),
         }
         file = undefined
         numFunctions = undefined
@@ -152,6 +165,7 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
         numBranchesHit = undefined
         numLines = undefined
         numLinesHit = undefined
+        linesMissing = undefined
         break
     }
   } )

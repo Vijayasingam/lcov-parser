@@ -34,10 +34,10 @@ end_of_record`
     const output = parseLcov( "randomPath" )
     expect( output ).toEqual( {
       "some/file.ts": {
-        lines: { total: 20, covered: 15, skipped: 5, pct: 75 },
-        functions: { total: 4, covered: 2, skipped: 2, pct: 50 },
-        statements: { total: 20, covered: 15, skipped: 5, pct: 75 },
-        branches: { total: 8, covered: 4, skipped: 4, pct: 50 },
+        lines: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
+        functions: { total: 4, covered: 2, skipped: 2, pct: 50, skippedItems: [] },
+        statements: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
+        branches: { total: 8, covered: 4, skipped: 4, pct: 50, skippedItems: [] },
       },
     } )
   } )
@@ -104,16 +104,16 @@ end_of_record`
     const output = parseLcov( "randomPath" )
     expect( output ).toEqual( {
       "some/file1.ts": {
-        lines: { total: 20, covered: 15, skipped: 5, pct: 75 },
-        functions: { total: 1, covered: 1, skipped: 0, pct: 100 },
-        statements: { total: 20, covered: 15, skipped: 5, pct: 75 },
-        branches: { total: 8, covered: 4, skipped: 4, pct: 50 },
+        lines: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
+        functions: { total: 1, covered: 1, skipped: 0, pct: 100, skippedItems: [] },
+        statements: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
+        branches: { total: 8, covered: 4, skipped: 4, pct: 50, skippedItems: [] },
       },
       "some/file2.ts": {
-        lines: { total: 20, covered: 15, skipped: 5, pct: 75 },
-        functions: { total: 2, covered: 1, skipped: 1, pct: 50 },
-        statements: { total: 20, covered: 15, skipped: 5, pct: 75 },
-        branches: { total: 8, covered: 4, skipped: 4, pct: 50 },
+        lines: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
+        functions: { total: 2, covered: 1, skipped: 1, pct: 50, skippedItems: [] },
+        statements: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
+        branches: { total: 8, covered: 4, skipped: 4, pct: 50, skippedItems: [] },
       },
     } )
   } )

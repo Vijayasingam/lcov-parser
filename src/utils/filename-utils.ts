@@ -35,10 +35,7 @@ export function getPrettyPathName( pathName: string, maxLength: number ): string
   }
 
   const rootAndName = `..${ path.sep }${ parts.base }`
-  if ( rootAndName.length <= maxLength ) {
-    return rootAndName
-  }
-  return `${ rootAndName.slice( 0, maxLength - 2 ) }..`
+  return rootAndName
 }
 
 /**

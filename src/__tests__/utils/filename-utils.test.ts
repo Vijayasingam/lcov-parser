@@ -29,7 +29,7 @@ describe( "getPrettyPathName", () => {
   it( "truncates the the basename third", () => {
     const input = "/quite-a-lot-actually/over/the/limit-and-this-is-long-as-well"
     const output = getPrettyPathName( input, 17 )
-    expect( output ).toEqual( "../limit-and-th.." )
+    expect( output ).toEqual( "../limit-and-this-is-long-as-well" )
   } )
 
   it( "treats the tilde as the root directory", () => {
