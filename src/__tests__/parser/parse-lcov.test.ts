@@ -35,7 +35,7 @@ end_of_record`
     expect( output ).toEqual( {
       "some/file.ts": {
         lines: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
-        functions: { total: 4, covered: 2, skipped: 2, pct: 50, skippedItems: [] },
+        functions: { total: 4, covered: 2, skipped: 2, pct: 50, skippedItems: undefined, },
         statements: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
         branches: { total: 8, covered: 4, skipped: 4, pct: 50, skippedItems: [] },
       },
@@ -105,13 +105,13 @@ end_of_record`
     expect( output ).toEqual( {
       "some/file1.ts": {
         lines: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
-        functions: { total: 1, covered: 1, skipped: 0, pct: 100, skippedItems: [] },
+        functions: { total: 1, covered: 1, skipped: 0, pct: 100, skippedItems: undefined },
         statements: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
         branches: { total: 8, covered: 4, skipped: 4, pct: 50, skippedItems: [] },
       },
       "some/file2.ts": {
         lines: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
-        functions: { total: 2, covered: 1, skipped: 1, pct: 50, skippedItems: [] },
+        functions: { total: 2, covered: 1, skipped: 1, pct: 50, skippedItems: undefined, },
         statements: { total: 20, covered: 15, skipped: 5, pct: 75, skippedItems: [] },
         branches: { total: 8, covered: 4, skipped: 4, pct: 50, skippedItems: [] },
       },

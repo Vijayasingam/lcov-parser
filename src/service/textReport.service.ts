@@ -120,18 +120,11 @@ export default class TextReport {
   }
 
   static missingLines( lines: any, colorizer: any ) {
-    // var missingLines = node.isSummary() ? [] : node.getFileCoverage().getUncoveredLines();
-    return colorizer( this.formatPct( lines.skippedItems && lines.skippedItems.length > 0 ? lines.skippedItems.join(", ") : "", 0, MISSING_COL ), "low" )
+    return colorizer( this.formatPct( lines.skippedItems && lines.skippedItems.length > 0 ? lines.skippedItems.join(",") : "", 0, MISSING_COL ), "low" )
   }
 
   static missingBranches( branches: any, colorizer: any ) {
-    // var branches = node.isSummary() ? {} : node.getFileCoverage().getBranchCoverageByLine(),
-    const missingLines = Object.keys( branches ).filter( ( key ) => {
-      return branches[ key ].coverage < 100
-    } ).map( ( key ) => {
-      return key
-    } )
-    return colorizer( this.formatPct( missingLines.join( "," ), 0, MISSING_COL ), "medium" )
+    return colorizer( this.formatPct( branches.skippedItems && branches.skippedItems.length > 0 ? branches.skippedItems.join(",") : "", 0, MISSING_COL ), "medium" )
   }
 
   static isFull( metrics: any ) {
@@ -165,7 +158,7 @@ export default class TextReport {
     elements.push( colorize( this.formatPct( mm.functions, 2 ), "functions" ) )
     elements.push( colorize( this.formatPct( mm.lines, 2 ), "lines" ) )
     if ( Number( mm.lines ) === 100 ) {
-      elements.push( this.missingBranches( row, this.colorize ) )
+      elements.push( this.missingBranches( row.branches, this.colorize ) )
     } else {
       elements.push( this.missingLines( row.lines, this.colorize ) )
     }

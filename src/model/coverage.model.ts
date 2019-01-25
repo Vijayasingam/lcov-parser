@@ -5,7 +5,7 @@ export interface CoverageItem {
   covered: number
   skipped: number
   pct: number
-  skippedItems?: string[]
+  skippedItems?: number[]
 }
 
 export interface CoverageEntry {

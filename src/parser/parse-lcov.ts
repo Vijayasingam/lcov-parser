@@ -88,18 +88,8 @@ function splitLine( line: string ): Line | undefined {
   return { token, parts }
 }
 
-function makeCoverageItem(currentItem: CoverageItem | undefined, total: number, covered: number, missing?: number ): CoverageItem {
-  if (!currentItem) {
-    currentItem = {total: 0, covered: 0, skipped: 0, pct: 0}
-  }
-  if (!currentItem.skippedItems) {
-    currentItem.skippedItems = []
-  }
-  const skippedItems = currentItem.skippedItems
-  if (missing) {
-    skippedItems.push(missing.toString())
-  }
-  return { total, covered, skippedItems, skipped: total - covered, pct: ( covered / total ) * 100 }
+function makeCoverageItem(total: number, covered: number, skippedItems?: number[] ): CoverageItem {
+  return { total, covered, skippedItems, skipped: total - covered, pct: total === 0 ? 100 : ( covered / total ) * 100 }
 }
 
 function convertToCollection( lines: Line[] ): CoverageCollection {
@@ -110,7 +100,8 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
   let numBranchesHit: number | undefined
   let numLines: number | undefined
   let numLinesHit: number | undefined
-  let linesMissing: number | undefined
+  let linesMissing: number[] = []
+  let branchesMissing: number[] = []
   const collection: CoverageCollection = {}
 
   lines.forEach( line => {
@@ -124,6 +115,13 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
       case LcovToken.FUNCTIONS_HIT:
         numFunctionsHit = Number( line.parts[ 0 ] )
         break
+      case LcovToken.BRANCH:
+        const branchNumber = Number( line.parts[ 0 ] )
+        const isBranchCovered = Number( line.parts[ 3 ] )
+        if (isBranchCovered === 0) {
+          branchesMissing.push(branchNumber)
+        }
+        break
       case LcovToken.BRANCHES_HIT:
         numBranchesHit = Number( line.parts[ 0 ] )
         break
@@ -131,7 +129,11 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
         numBranches = Number( line.parts[ 0 ] )
         break
       case LcovToken.LINE:
-        linesMissing = Number( line.parts[ 1 ] )
+        const lineNumber = Number( line.parts[ 0 ] )
+        const isCovered = Number( line.parts[ 1 ] )
+        if (isCovered === 0) {
+          linesMissing.push(lineNumber)
+        }
         break
       case LcovToken.LINES_HIT:
         numLinesHit = Number( line.parts[ 0 ] )
@@ -151,12 +153,11 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
         ) {
           throw Error()
         }
-        const isNew = !collection[ file ]
         collection[ file ] = {
-          lines: makeCoverageItem(isNew ? undefined : collection[ file ].lines, numLines, numLinesHit, linesMissing ),
-          functions: makeCoverageItem(isNew ? undefined : collection[ file ].functions, numFunctions, numFunctionsHit ),
-          branches: makeCoverageItem(isNew ? undefined : collection[ file ].branches, numBranches, numBranchesHit ),
-          statements: makeCoverageItem(isNew ? undefined : collection[ file ].statements, numLines, numLinesHit ),
+          lines: makeCoverageItem(numLines, numLinesHit, linesMissing ),
+          functions: makeCoverageItem(numFunctions, numFunctionsHit ),
+          branches: makeCoverageItem(numBranches, numBranchesHit, branchesMissing ),
+          statements: makeCoverageItem(numLines, numLinesHit, linesMissing ),
         }
         file = undefined
         numFunctions = undefined
@@ -165,7 +166,8 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
         numBranchesHit = undefined
         numLines = undefined
         numLinesHit = undefined
-        linesMissing = undefined
+        linesMissing = []
+        branchesMissing = []
         break
     }
   } )
