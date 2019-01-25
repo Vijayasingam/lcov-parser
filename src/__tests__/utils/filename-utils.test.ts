@@ -1,5 +1,5 @@
 import * as path from "path"
-import { escapeMarkdownCharacters, getPrettyPathName, parseGitRootPathOutput, trimLineEnding } from "../../utils/filename-utils"
+import { getPrettyPathName, parseGitRootPathOutput, trimLineEnding } from "../../utils/filename-utils"
 
 describe( "getPrettyPathName", () => {
   it( "doesn't change strings equal to the limit", () => {
@@ -36,15 +36,6 @@ describe( "getPrettyPathName", () => {
     const input = "~/just/over/the/limit"
     const output = getPrettyPathName( input, 18 )
     expect( output ).toEqual( "~/../the/limit" )
-  } )
-} )
-
-describe( "escapeMarkdownCharacters", () => {
-  it( "escapes filenames with '|,(,),[,],#,*,{,},-,+,_,!,\\,`>' characters", () => {
-    const filename = `src/file-with-characters{[(|#*-+_!\`)]}.ts`
-    const expectedFilename = `src/file\\-with\\-characters\\{\\[\\(\\|\\#\\*\\-\\+\\_\\!\\\`\\)\\]\\}.ts`
-    const output = escapeMarkdownCharacters( filename )
-    expect( output ).toEqual( expectedFilename )
   } )
 } )
 

@@ -4,9 +4,7 @@ describe( "makeCompleteConfiguration", () => {
   const base = {
     coveragePaths: [ "./coverage/coverage-summary.json" ],
     reportFileSet: "all",
-    reportMode: "message",
     entrySortMethod: "alphabetically",
-    numberOfEntries: 10000,
     threshold: {
       statements: 50,
       branches: 50,
@@ -27,13 +25,4 @@ describe( "makeCompleteConfiguration", () => {
     expect( output ).toEqual( { ...base, coveragePaths: [ "some-other-path" ] } )
   } )
 
-  it( "overrides a specific value from the default", () => {
-    const output = makeCompleteConfiguration( {
-      reportMode: "warn",
-    } )
-    expect( output ).toEqual( {
-      ...base,
-      reportMode: "warn",
-    } )
-  } )
 } )

@@ -1,5 +1,5 @@
-import {Config, makeCompleteConfiguration, ReportFileSet, ReportMode, SourcePath, SourcePathExplicit, SourceType} from "./model/config.model"
-import {CoverageCollection, CoverageEntry, CoverageItem, CoverageModel, makeCoverageModel, meetsThreshold} from "./model/coverage.model"
+import { Config, makeCompleteConfiguration, ReportFileSet, SourcePath, SourcePathExplicit, SourceType } from "./model/config.model"
+import { CoverageCollection, CoverageEntry, CoverageItem, CoverageModel, makeCoverageModel, meetsThreshold } from "./model/coverage.model"
 import { parseJsonSummary } from "./parser/parse-json-summary"
 
 import * as _ from "lodash"
@@ -26,16 +26,6 @@ function getFileSet( reportChangeType: ReportFileSet, all: string[], modified: s
   return _.union( created, modified )
 }
 
-function getReportFunc( reportMode: ReportMode ) {
-  if ( reportMode === "warn" ) {
-    return console.warn
-  }
-  if ( reportMode === "fail" ) {
-    return console.error
-  }
-  return console.log
-}
-
 function getFileGroupLongDescription( reportChangeType: ReportFileSet ) {
   if ( reportChangeType === "all" ) {
     return "the whole codebase"
@@ -50,17 +40,14 @@ function getFileGroupLongDescription( reportChangeType: ReportFileSet ) {
 }
 
 function printCoverageHealth( config: Config, results: CoverageEntry ) {
-  const reportFunc = getReportFunc( config.reportMode )
   const messageType = getFileGroupLongDescription( config.reportFileSet )
   if ( !meetsThreshold( results, config.threshold ) ) {
-    const defaultMessage = `Hmmm, code coverage is looking low for ${ messageType }.`
-    reportFunc( config.customFailureMessage !== undefined ? config.customFailureMessage : defaultMessage )
+    console.log( `Hmmm, code coverage is looking low for ${ messageType }.` )
   } else {
-    const defaultMessage = `Test coverage is looking good for ${ messageType }`
-    console.log( config.customSuccessMessage !== undefined ? config.customSuccessMessage : defaultMessage )
+    console.log( `Test coverage is looking good for ${ messageType }` )
   }
 }
-function formatItem( item: CoverageItem, precision: number = 0) {
+function formatItem( item: CoverageItem, precision: number = 0 ) {
   return `(${ item.covered }/${ item.total }) ${ item.pct.toFixed( precision ) }%`
 }
 
@@ -70,17 +57,17 @@ function formatSourceName( source: string ): string {
 
 function generateReport( basePath: string, coverage: CoverageModel, combinedConfig: Config ) {
   let maxFileNameLen: number = 0
-  Object.keys(coverage.displayed).forEach((filename ) => {
+  Object.keys( coverage.displayed ).forEach( ( filename ) => {
     const name = formatSourceName( path.relative( basePath, filename ) )
-    if (name.length > maxFileNameLen) {
+    if ( name.length > maxFileNameLen ) {
       maxFileNameLen = name.length
     }
-  })
-  const header = TextReport.tableHeader(maxFileNameLen + 5)
+  } )
+  const header = TextReport.tableHeader( maxFileNameLen + 5 )
   const lines = Object.keys( coverage.displayed ).map( filename => {
     const e = coverage.displayed[ filename ]
     e.name = formatSourceName( path.relative( basePath, filename ) )
-    return TextReport.tableRow(e, maxFileNameLen + 5, 1, combinedConfig.skipEmpty, combinedConfig.skipFull)
+    return TextReport.tableRow( e, maxFileNameLen + 5, 1, combinedConfig.skipEmpty, combinedConfig.skipFull )
   } )
 
   const ellided =
@@ -96,12 +83,12 @@ function generateReport( basePath: string, coverage: CoverageModel, combinedConf
 
   const total = [
     "Total",
-    formatItem( coverage.total.lines, 2  ),
+    formatItem( coverage.total.lines, 2 ),
     formatItem( coverage.total.statements, 2 ),
     formatItem( coverage.total.functions, 2 ),
     formatItem( coverage.total.branches, 2 ),
   ].join( " | " )
-  return console.log([ header, ...lines, ellided, total, "" ].filter( part => part !== undefined ).join( "\n" ))
+  return console.log( [ header, ...lines, ellided, total, "" ].filter( part => part !== undefined ).join( "\n" ) )
 }
 
 function getCoveragePaths( coveragePaths: SourcePath[] ): SourcePathExplicit[] {
@@ -140,13 +127,11 @@ function getCombinedCoverageCollection( coveragePaths: SourcePathExplicit[] ): C
 }
 
 /**
- * Danger.js plugin for monitoring code coverage on changed files.
+ * LCOV Parser to read LCOV file and print in the console.
  */
 export function reportCoverage( config?: Partial<Config> ): Promise<void> {
   const combinedConfig = makeCompleteConfiguration( config )
-
   const coveragePaths = getCoveragePaths( combinedConfig.coveragePaths )
-
   let coverage: CoverageCollection
   try {
     const parsedCoverage = getCombinedCoverageCollection( coveragePaths )
@@ -176,14 +161,13 @@ export function reportCoverage( config?: Partial<Config> ): Promise<void> {
       }
 
       const coverageModel = makeCoverageModel(
-        combinedConfig.numberOfEntries,
         files,
         coverage,
         combinedConfig.entrySortMethod
       )
 
       generateReport( gitRoot, coverageModel, combinedConfig )
-      if (combinedConfig.threshold) {
+      if ( combinedConfig.threshold ) {
         printCoverageHealth( combinedConfig, coverageModel.total )
       }
     } )

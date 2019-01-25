@@ -39,16 +39,6 @@ export function getPrettyPathName( pathName: string, maxLength: number ): string
 }
 
 /**
- * Escapes the characters |()[]#*{}-+_!\,`> from a string.
- * @param source The source to escape
- * @returns An escaped version of the string
- */
-export function escapeMarkdownCharacters( source: string ) {
-  const escapedCharacters = [ "|", "(", ")", "[", "]", "#", "*", "{", "}", "-", "+", "_", "!", "\\", "`" ]
-  return [ ...source ].map( c => ( _.includes( escapedCharacters, c ) ? `\\${ c }` : c ) ).join( "" )
-}
-
-/**
  * Parses the output from the git root directory command, removing newlines and adding a platform
  * native separator.
  * @param stdout The output to cleanup

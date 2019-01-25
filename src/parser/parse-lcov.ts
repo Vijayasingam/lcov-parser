@@ -88,7 +88,7 @@ function splitLine( line: string ): Line | undefined {
   return { token, parts }
 }
 
-function makeCoverageItem(total: number, covered: number, skippedItems?: number[] ): CoverageItem {
+function makeCoverageItem( total: number, covered: number, skippedItems?: number[] ): CoverageItem {
   return { total, covered, skippedItems, skipped: total - covered, pct: total === 0 ? 100 : ( covered / total ) * 100 }
 }
 
@@ -118,8 +118,8 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
       case LcovToken.BRANCH:
         const branchNumber = Number( line.parts[ 0 ] )
         const isBranchCovered = Number( line.parts[ 3 ] )
-        if (isBranchCovered === 0) {
-          branchesMissing.push(branchNumber)
+        if ( isBranchCovered === 0 ) {
+          branchesMissing.push( branchNumber )
         }
         break
       case LcovToken.BRANCHES_HIT:
@@ -131,8 +131,8 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
       case LcovToken.LINE:
         const lineNumber = Number( line.parts[ 0 ] )
         const isCovered = Number( line.parts[ 1 ] )
-        if (isCovered === 0) {
-          linesMissing.push(lineNumber)
+        if ( isCovered === 0 ) {
+          linesMissing.push( lineNumber )
         }
         break
       case LcovToken.LINES_HIT:
@@ -154,10 +154,10 @@ function convertToCollection( lines: Line[] ): CoverageCollection {
           throw Error()
         }
         collection[ file ] = {
-          lines: makeCoverageItem(numLines, numLinesHit, linesMissing ),
-          functions: makeCoverageItem(numFunctions, numFunctionsHit ),
-          branches: makeCoverageItem(numBranches, numBranchesHit, branchesMissing ),
-          statements: makeCoverageItem(numLines, numLinesHit, linesMissing ),
+          lines: makeCoverageItem( numLines, numLinesHit, linesMissing ),
+          functions: makeCoverageItem( numFunctions, numFunctionsHit ),
+          branches: makeCoverageItem( numBranches, numBranchesHit, branchesMissing ),
+          statements: makeCoverageItem( numLines, numLinesHit, linesMissing ),
         }
         file = undefined
         numFunctions = undefined

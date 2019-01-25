@@ -1,55 +1,27 @@
-import { Metrics, Node } from "../model/report.model"
+import { CoverageEntry, Metrics } from "../model/coverage.model"
 
 const PCT_COLS = 9
 const MISSING_COL = 18
 const TAB_SIZE = 1
 const DELIM = " |"
-const COL_DELIM = "-|"
 export default class TextReport {
 
-  static watermarksConfig: {[key: string]: number[]} = {
-    statements: [50, 80],
-    functions: [50, 80],
-    branches: [50, 80],
-    lines: [50, 80]
+  static watermarksConfig: { [ key: string ]: number[] } = {
+    statements: [ 50, 80 ],
+    functions: [ 50, 80 ],
+    branches: [ 50, 80 ],
+    lines: [ 50, 80 ]
   }
-  static getLineCoverage() {
-    const statementMap: any = {} // this.data.statementMap,
-    const statements: any = {} // this.data.s,
-    const lineMap: any = {}
-
-    Object.keys(statements).forEach((st) => {
-        if (!statementMap[st]) {
-            return
-        }
-        const line = statementMap[st].start.line
-        const count = statements[st]
-        const prevVal = lineMap[line]
-        if (prevVal === undefined || prevVal < count) {
-            lineMap[line] = count
-        }
-    })
-    return lineMap
-}  static getUncoveredLines() {
-    const lc = this.getLineCoverage()
-    const ret: string[] = []
-    Object.keys(lc).forEach((l) => {
-        const hits = lc[l]
-        if (hits === 0) {
-            ret.push(l)
-        }
-    })
-    return ret
-}  static classForPercent(type: string, value: number) {
-    const watermarks: number[] = this.watermarksConfig[type]
-    if (!watermarks) {
-        return "unknown"
+  static classForPercent( type: string, value: number ) {
+    const watermarks: number[] = this.watermarksConfig[ type ]
+    if ( !watermarks ) {
+      return "unknown"
     }
-    if (value < watermarks[0]) {
-        return "low"
+    if ( value < watermarks[ 0 ] ) {
+      return "low"
     }
-    if (value >= watermarks[1]) {
-        return "high"
+    if ( value >= watermarks[ 1 ] ) {
+      return "high"
     }
     return "medium"
   }
@@ -91,21 +63,7 @@ export default class TextReport {
   }
 
   static formatPct( pct: string, round?: number, width?: number ) {
-    return this.fill( round ? Number(pct).toFixed(2) : pct, width || PCT_COLS, true, 0 )
-  }
-
-  static  makeLine( nameWidth: number ) {
-    const name = this.padding( nameWidth, "-" )
-    const pct = this.padding( PCT_COLS, "-" )
-    const elements = []
-
-    elements.push( name )
-    elements.push( pct )
-    elements.push( pct )
-    elements.push( pct )
-    elements.push( pct )
-    elements.push( this.padding( MISSING_COL, "-" ) )
-    return elements.join( COL_DELIM ) + COL_DELIM
+    return this.fill( round ? Number( pct ).toFixed( 2 ) : pct, width || PCT_COLS, true, 0 )
   }
 
   static tableHeader( maxNameCols: number ) {
@@ -120,11 +78,11 @@ export default class TextReport {
   }
 
   static missingLines( lines: any, colorizer: any ) {
-    return colorizer( this.formatPct( lines.skippedItems && lines.skippedItems.length > 0 ? lines.skippedItems.join(",") : "", 0, MISSING_COL ), "low" )
+    return colorizer( this.formatPct( lines.skippedItems && lines.skippedItems.length > 0 ? lines.skippedItems.join( "," ) : "", 0, MISSING_COL ), "low" )
   }
 
   static missingBranches( branches: any, colorizer: any ) {
-    return colorizer( this.formatPct( branches.skippedItems && branches.skippedItems.length > 0 ? branches.skippedItems.join(",") : "", 0, MISSING_COL ), "medium" )
+    return colorizer( this.formatPct( branches.skippedItems && branches.skippedItems.length > 0 ? branches.skippedItems.join( "," ) : "", 0, MISSING_COL ), "medium" )
   }
 
   static isFull( metrics: any ) {
@@ -134,8 +92,9 @@ export default class TextReport {
       metrics.lines.pct === 100
   }
 
-  static tableRow( row: Node, maxNameCols: number, level: number, skipEmpty?: boolean, skipFull?: boolean ) {
-    const name = row.name
+  static tableRow( row: CoverageEntry, maxNameCols: number, level: number, skipEmpty?: boolean, skipFull?: boolean ) {
+    // @ts-ignore
+    const name: string = row.name
     const metrics = { ...row }
     const isEmpty = !metrics.statements.pct && !metrics.branches.pct && !metrics.functions.pct && !metrics.lines.pct
     if ( skipEmpty && isEmpty ) { return "" }
@@ -143,12 +102,12 @@ export default class TextReport {
 
     const mm: Metrics = {
       statements: isEmpty || !metrics.statements.pct ? 0 : metrics.statements.pct,
-      branches: isEmpty  || !metrics.branches.pct ? 0 : metrics.branches.pct,
-      functions: isEmpty  || !metrics.functions.pct ? 0 : metrics.functions.pct,
-      lines: isEmpty  || !metrics.lines.pct ? 0 : metrics.lines.pct,
+      branches: isEmpty || !metrics.branches.pct ? 0 : metrics.branches.pct,
+      functions: isEmpty || !metrics.functions.pct ? 0 : metrics.functions.pct,
+      lines: isEmpty || !metrics.lines.pct ? 0 : metrics.lines.pct,
     }
     const colorize = isEmpty ? ( str: string ) => str : ( str: string, key: string ) => {
-      return this.colorize( str, this.classForPercent( key, Number(mm[ key ]) ) )
+      return this.colorize( str, this.classForPercent( key, Number( mm[ key ] ) ) )
     }
     const elements = []
 
@@ -164,16 +123,16 @@ export default class TextReport {
     }
     return elements.join( DELIM ) + DELIM
   }
-  static colorize(str: string, clazz: string) {
-    const colors: {[key: string]: string} = {
-        low: "31;1",
-        medium: "33;1",
-        high: "32;1"
+  static colorize( str: string, clazz: string ) {
+    const colors: { [ key: string ]: string } = {
+      low: "31;1",
+      medium: "33;1",
+      high: "32;1"
     }
 
-    if (require("tty").isatty(1) && colors[clazz]) {
-        return "\u001b[" + colors[clazz] + "m" + str + "\u001b[0m"
+    if ( require( "tty" ).isatty( 1 ) && colors[ clazz ] ) {
+      return "\u001b[" + colors[ clazz ] + "m" + str + "\u001b[0m"
     }
     return str
-}
+  }
 }

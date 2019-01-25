@@ -15,7 +15,9 @@ export interface CoverageEntry {
   branches: CoverageItem
   name?: string
 }
-
+export interface Metrics {
+  [key: string]: any;
+}
 export interface CoverageCollection {
   [ key: string ]: CoverageEntry
 }
@@ -104,16 +106,15 @@ export function sortFiles( files: string[], coverageCollection: CoverageCollecti
 }
 
 export function makeCoverageModel(
-  numberOfEntries: number,
   files: string[],
   coverageCollection: CoverageCollection,
   sortMethod: SortMethod = "alphabetically"
 ) {
   const sortedFiles = sortFiles( files, coverageCollection, sortMethod )
 
-  const displayedFiles = sortedFiles.slice( 0, Math.min( sortedFiles.length, numberOfEntries ) )
-  const displayedEntries = displayedFiles.map( file => coverageCollection[ file ] )
-  const ellidedEntries = sortedFiles.slice( numberOfEntries ).map( file => coverageCollection[ file ] )
+  const displayedFiles = sortedFiles
+  const displayedEntries = sortedFiles.map( file => coverageCollection[ file ] )
+  const ellidedEntries = sortedFiles.map( file => coverageCollection[ file ] )
 
   const ellidedSummary = reduceEntries( ellidedEntries )
   const totalSummary = reduceEntries( [ ...displayedEntries, ellidedSummary ] )

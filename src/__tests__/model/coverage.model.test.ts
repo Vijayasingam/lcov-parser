@@ -110,24 +110,12 @@ describe( "makeCoverageModel", () => {
   }
 
   it( "calculates the average of the final two elided entries", () => {
-    const output = makeCoverageModel( 2, files, coverage )
-    expect( output.elidedCount ).toEqual( 2 )
+    const output = makeCoverageModel( files, coverage )
     expect( output.elided ).toEqual( {
-      lines: { total: 200, covered: 150, skipped: 50, pct: 75 },
-      functions: { total: 200, covered: 150, skipped: 50, pct: 75 },
-      statements: { total: 200, covered: 150, skipped: 50, pct: 75 },
-      branches: { total: 200, covered: 150, skipped: 50, pct: 75 },
-    } )
-  } )
-
-  it( "doesn't elide when total number of files is equal to numberOfEntries to display", () => {
-    const output = makeCoverageModel( 4, files, coverage )
-    expect( output.elidedCount ).toEqual( 0 )
-    expect( output.elided ).toEqual( {
-      lines: { total: 0, covered: 0, skipped: 0, pct: 0 },
-      functions: { total: 0, covered: 0, skipped: 0, pct: 0 },
-      statements: { total: 0, covered: 0, skipped: 0, pct: 0 },
-      branches: { total: 0, covered: 0, skipped: 0, pct: 0 },
+      lines: { total: 400, covered: 260, skipped: 140, pct: 65 },
+      functions: { total: 400, covered: 260, skipped: 140, pct: 65 },
+      statements: { total: 400, covered: 260, skipped: 140, pct: 65 },
+      branches: { total: 400, covered: 260, skipped: 140, pct: 65 },
     } )
   } )
 } )

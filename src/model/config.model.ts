@@ -1,5 +1,4 @@
 export type ReportFileSet = "created" | "modified" | "createdOrModified" | "all"
-export type ReportMode = "fail" | "warn" | "message"
 export type SortMethod =
   | "alphabetically"
   | "least-coverage"
@@ -23,15 +22,11 @@ export interface CoverageThreshold {
 }
 
 export interface Config {
-  customSuccessMessage?: string
-  customFailureMessage?: string
-  numberOfEntries: number
   entrySortMethod: SortMethod
   coveragePath?: SourcePath
   coveragePaths: SourcePath[]
   reportFileSet: ReportFileSet
   threshold: CoverageThreshold
-  reportMode: ReportMode
   skipEmpty?: boolean
   skipFull?: boolean
 }
@@ -45,9 +40,7 @@ export function makeCompleteConfiguration(config?: Partial<Config>): Config {
   const defaults: Config = {
     coveragePaths: [],
     reportFileSet: "all",
-    reportMode: "message",
     entrySortMethod: "alphabetically",
-    numberOfEntries: 10000,
     threshold: {
       statements: 50,
       branches: 50,

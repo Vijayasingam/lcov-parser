@@ -3,7 +3,7 @@ import FilesystemService from "../../service/filesystem.service"
 
 jest.mock( "../../service/filesystem.service" )
 function setupCoverageFile( coverage: string | undefined ) {
-   ( FilesystemService as any ).mockImplementation( () => {
+  ( FilesystemService as any ).mockImplementation( () => {
     return {
       exists: () => coverage !== undefined,
       read: () => ( coverage !== undefined ? Buffer.from( coverage, "utf8" ) : undefined ),
