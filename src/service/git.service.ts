@@ -27,24 +27,20 @@ export class GitService {
       } )
     } )
   }
-  getModifiedFiles(): string[] {
-    // TODO
-    // new Promise( resolve => {
-    //   exec( "git diff --name-only && git diff --name-only --cached", ( error, stdout, stderr ) => {
-    //     const failed = error || stderr !== ""
-    //     resolve( failed ? "HEAD" : trimLineEnding( stdout ) )
-    //   } )
-    // } )
-    return []
+  getModifiedFiles(): Promise<string[]> {
+    return new Promise( resolve => {
+      exec( "git diff --name-only && git diff --name-only --cached", ( error, stdout, stderr ) => {
+        const failed = error || stderr !== ""
+        resolve( failed ? [] : stdout.split("\n"))
+      } )
+    } )
   }
-  getCreatedFiles(): string[] {
-    // TODO
-    // new Promise( resolve => {
-    //   exec( "git ls-files --exclude-standard --others && git diff --name-only --cached", ( error, stdout, stderr ) => {
-    //     const failed = error || stderr !== ""
-    //     resolve( failed ? "HEAD" : trimLineEnding( stdout ) )
-    //   } )
-    // } )
-    return []
+  getCreatedFiles(): Promise<string[]> {
+    return new Promise( resolve => {
+      exec( "git ls-files --exclude-standard --others && git diff --name-only --cached", ( error, stdout, stderr ) => {
+        const failed = error || stderr !== ""
+        resolve( failed ? [] : stdout.split("\n"))
+      } )
+    } )
   }
 }

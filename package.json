@@ -1,6 +1,6 @@
 {
   "name": "lcov-parser",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "description": "To Parse LCOV file and print in the console",
   "license": "MIT",
@@ -43,7 +43,8 @@
       "js"
     ],
     "coverageReporters": [
-      "lcov"
+      "lcov",
+      "text"
     ],
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"

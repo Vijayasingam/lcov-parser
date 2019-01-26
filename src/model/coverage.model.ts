@@ -24,8 +24,6 @@ export interface CoverageCollection {
 
 export interface CoverageModel {
   total: CoverageEntry
-  elided: CoverageEntry
-  elidedCount: number
   displayed: CoverageCollection
 }
 
@@ -129,8 +127,6 @@ export function makeCoverageModel(
   return {
     displayed: coverageEntries,
     total: totalSummary,
-    elided: ellidedSummary,
-    elidedCount: ellidedEntries.length,
   }
 }
 

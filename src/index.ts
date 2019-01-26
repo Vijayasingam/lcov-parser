@@ -70,17 +70,6 @@ function generateReport( basePath: string, coverage: CoverageModel, combinedConf
     return TextReport.tableRow( e, maxFileNameLen + 5, 1, combinedConfig.skipEmpty, combinedConfig.skipFull )
   } )
 
-  const ellided =
-    coverage.elidedCount === 0
-      ? undefined
-      : [
-        `Other (${ coverage.elidedCount } more)`,
-        formatItem( coverage.elided.lines ),
-        formatItem( coverage.elided.statements ),
-        formatItem( coverage.elided.functions ),
-        formatItem( coverage.elided.branches ),
-      ].join( " | " )
-
   const total = [
     "Total",
     formatItem( coverage.total.lines, 2 ),
@@ -88,7 +77,7 @@ function generateReport( basePath: string, coverage: CoverageModel, combinedConf
     formatItem( coverage.total.functions, 2 ),
     formatItem( coverage.total.branches, 2 ),
   ].join( " | " )
-  return console.log( [ header, ...lines, ellided, total, "" ].filter( part => part !== undefined ).join( "\n" ) )
+  return console.log( [ header, ...lines, total, "" ].filter( part => part !== undefined ).join( "\n" ) )
 }
 
 function getCoveragePaths( coveragePaths: SourcePath[] ): SourcePathExplicit[] {
@@ -145,21 +134,18 @@ export function reportCoverage( config?: Partial<Config> ): Promise<void> {
   }
   const gitService = new GitService()
 
-  const gitProperties = Promise.all( [ gitService.getRootDirectory(), gitService.getCurrentCommit() ] )
+  const gitProperties = Promise.all( [ gitService.getRootDirectory(), gitService.getCurrentCommit(), gitService.getModifiedFiles(), gitService.getCreatedFiles() ] )
 
   return gitProperties
     .then( values => {
-      const gitRoot = values[ 0 ]
-      const modifiedFiles = filterForCoveredFiles( gitRoot, gitService.getModifiedFiles(), coverage )
-      const createdFiles = filterForCoveredFiles( gitRoot, gitService.getCreatedFiles(), coverage )
+      const gitRoot = values[0]
+      const modifiedFiles = filterForCoveredFiles( gitRoot, values[2], coverage )
+      const createdFiles = filterForCoveredFiles( gitRoot, values[3], coverage )
       const allFiles = Object.keys( coverage ).filter( filename => filename !== "total" )
-
       const files = getFileSet( combinedConfig.reportFileSet, allFiles, modifiedFiles, createdFiles )
-
       if ( files.length === 0 ) {
         return
       }
-
       const coverageModel = makeCoverageModel(
         files,
         coverage,

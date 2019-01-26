@@ -1,4 +1,4 @@
-import { combineEntries, CoverageCollection, CoverageEntry, makeCoverageModel, meetsThreshold, sortFiles } from "../../model/coverage.model"
+import { combineEntries, CoverageEntry, meetsThreshold, sortFiles } from "../../model/coverage.model"
 
 describe( "combineEntries()", () => {
   it( "can add non-zero line counts", () => {
@@ -77,46 +77,6 @@ describe( "meetsThreshold()", () => {
   it( "returns true when all coverage equal to thresholds", () => {
     const result = meetsThreshold( entry, { lines: 50, statements: 50, branches: 50, functions: 50 } )
     expect( result ).toBe( true )
-  } )
-} )
-
-describe( "makeCoverageModel", () => {
-  const files = [ "file1", "file2", "file3", "file4" ]
-  const coverage: CoverageCollection = {
-    file1: {
-      lines: { total: 100, covered: 50, skipped: 50, pct: 50 },
-      functions: { total: 100, covered: 50, skipped: 50, pct: 50 },
-      statements: { total: 100, covered: 50, skipped: 50, pct: 50 },
-      branches: { total: 100, covered: 50, skipped: 50, pct: 50 },
-    },
-    file2: {
-      lines: { total: 100, covered: 60, skipped: 40, pct: 60 },
-      functions: { total: 100, covered: 60, skipped: 40, pct: 60 },
-      statements: { total: 100, covered: 60, skipped: 40, pct: 60 },
-      branches: { total: 100, covered: 60, skipped: 40, pct: 60 },
-    },
-    file3: {
-      lines: { total: 100, covered: 70, skipped: 30, pct: 70 },
-      functions: { total: 100, covered: 70, skipped: 30, pct: 70 },
-      statements: { total: 100, covered: 70, skipped: 30, pct: 70 },
-      branches: { total: 100, covered: 70, skipped: 30, pct: 70 },
-    },
-    file4: {
-      lines: { total: 100, covered: 80, skipped: 20, pct: 80 },
-      functions: { total: 100, covered: 80, skipped: 20, pct: 80 },
-      statements: { total: 100, covered: 80, skipped: 20, pct: 80 },
-      branches: { total: 100, covered: 80, skipped: 20, pct: 80 },
-    },
-  }
-
-  it( "calculates the average of the final two elided entries", () => {
-    const output = makeCoverageModel( files, coverage )
-    expect( output.elided ).toEqual( {
-      lines: { total: 400, covered: 260, skipped: 140, pct: 65 },
-      functions: { total: 400, covered: 260, skipped: 140, pct: 65 },
-      statements: { total: 400, covered: 260, skipped: 140, pct: 65 },
-      branches: { total: 400, covered: 260, skipped: 140, pct: 65 },
-    } )
   } )
 } )
 
